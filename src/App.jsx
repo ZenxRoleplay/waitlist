@@ -483,8 +483,8 @@ function Waitlist() {
     try {
       await fetch(WAITLIST_ENDPOINT, {
         method: 'POST',
-        mode: 'no-cors',  // Apps Script returns opaque response — this is expected
-        headers: { 'Content-Type': 'application/json' },
+        mode: 'no-cors',
+        headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
         body: JSON.stringify(payload),
       })
       setStatus('success')
