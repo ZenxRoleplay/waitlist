@@ -461,7 +461,7 @@ function isValidEmail(v) {
 function Waitlist() {
   const [email,   setEmail]   = useState('')
   const [error,   setError]   = useState('')
-  const [status,  setStatus]  = useState('idle') // idle | loading | success | error
+  const [status,  setStatus]  = useState('idle') // idle | loading | success | error | duplicate
 
   const handleSubmit = async (e) => {
     e.preventDefault()
@@ -481,13 +481,18 @@ function Waitlist() {
     }
 
     try {
-      await fetch(WAITLIST_ENDPOINT, {
+      const res  = await fetch(WAITLIST_ENDPOINT, {
         method: 'POST',
-        mode: 'no-cors',
+        mode: 'cors',
         headers: { 'Content-Type': 'text/plain;charset=UTF-8' },
         body: JSON.stringify(payload),
       })
-      setStatus('success')
+      const json = await res.json().catch(() => ({ status: 'ok' }))
+      if (json.status === 'duplicate') {
+        setStatus('duplicate')
+      } else {
+        setStatus('success')
+      }
     } catch {
       setStatus('error')
     }
@@ -548,7 +553,7 @@ function Waitlist() {
                       onChange={e => {
                         setEmail(e.target.value)
                         if (error && isValidEmail(e.target.value)) setError('')
-                        if (status === 'error') setStatus('idle')
+                        if (status === 'error' || status === 'duplicate') setStatus('idle')
                       }}
                       placeholder="you@example.com"
                       autoComplete="email"
@@ -571,6 +576,20 @@ function Waitlist() {
                       )}
                     </AnimatePresence>
                   </div>
+
+                  <AnimatePresence>
+                    {status === 'duplicate' && (
+                      <motion.div
+                        key="dup-err"
+                        initial={{ opacity: 0, height: 0 }}
+                        animate={{ opacity: 1, height: 'auto' }}
+                        exit={{ opacity: 0, height: 0 }}
+                        className="mb-4 text-sm text-amber-700 bg-amber-50 border border-amber-100 rounded-xl px-4 py-2.5 text-left overflow-hidden"
+                      >
+                        This email is already on the waitlist. 👀
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
 
                   <AnimatePresence>
                     {status === 'error' && (
