@@ -1,0 +1,129 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  background-color: #f8f7ff;
+  color: #0f0f13;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Gradient mesh background ── */
+.mesh-bg {
+  background-color: #f8f7ff;
+  background-image:
+    radial-gradient(ellipse 80% 60% at 20%  20%, rgba(167,139,250,0.18) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 80% at 80%  10%, rgba(99, 102,241,0.12) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 50% 100%, rgba(167,139,250,0.10) 0%, transparent 60%);
+}
+
+/* ── Blob keyframes ── */
+@keyframes blob {
+  0%,100% { transform: translate(0px,  0px)  scale(1.00); }
+  33%     { transform: translate(40px,-30px)  scale(1.08); }
+  66%     { transform: translate(-20px,20px)  scale(0.94); }
+}
+
+@keyframes blob2 {
+  0%,100% { transform: translate(0px,  0px)  scale(1.00); }
+  33%     { transform: translate(-35px,25px)  scale(1.06); }
+  66%     { transform: translate(25px, -20px) scale(0.96); }
+}
+
+@keyframes blob3 {
+  0%,100% { transform: translate(0px,  0px)  scale(1.00); }
+  50%     { transform: translate(20px,  30px) scale(1.04); }
+}
+
+.blob-1 { animation: blob  14s ease-in-out infinite; }
+.blob-2 { animation: blob2 11s ease-in-out infinite 3s; }
+.blob-3 { animation: blob3  9s ease-in-out infinite 6s; }
+
+/* ── Navbar animated underline ── */
+.nav-link {
+  position: relative;
+}
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -2px;
+  left: 0;
+  width: 0%;
+  height: 2px;
+  background: #7c3aed;
+  border-radius: 2px;
+  transition: width 0.25s ease;
+}
+.nav-link:hover::after { width: 100%; }
+
+/* ── Spinner ── */
+@keyframes spin-fast {
+  to { transform: rotate(360deg); }
+}
+.spinner {
+  display: inline-block;
+  width: 18px;
+  height: 18px;
+  border: 2.5px solid rgba(255,255,255,0.35);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: spin-fast 0.75s linear infinite;
+}
+
+/* ── Input glow ── */
+.input-glow {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.input-glow:focus {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 4px rgba(139,92,246,0.12);
+}
+
+/* ── Pill shimmer sweep ── */
+@keyframes shimmer {
+  0%   { background-position: -200% center; }
+  100% { background-position:  200% center; }
+}
+.pill-shimmer {
+  background: linear-gradient(
+    105deg,
+    transparent 30%,
+    rgba(167,139,250,0.35) 50%,
+    transparent 70%
+  ) center / 200% auto;
+  animation: shimmer 2.8s linear infinite;
+}
+
+/* ── Dot glow pulse ── */
+@keyframes dot-glow {
+  0%, 100% { box-shadow: 0 0 0 0    rgba(139,92,246,0.7); transform: scale(1); }
+  50%      { box-shadow: 0 0 0 5px rgba(139,92,246,0);   transform: scale(1.15); }
+}
+.dot-glow { animation: dot-glow 1.6s ease-in-out infinite; }
+
+/* ── Success fade ── */
+@keyframes success-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0);    }
+}
+.success-in { animation: success-in 0.45s cubic-bezier(0.22,1,0.36,1) both; }
+
+/* ── Glassmorphism card ── */
+.glass-card {
+  background: rgba(255,255,255,0.72);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border: 1px solid rgba(255,255,255,0.6);
+}
+
+/* step connector lines are now Framer Motion elements — no CSS needed */
