@@ -8,7 +8,7 @@ import {
 } from 'framer-motion'
 
 // ── Replace with your deployed Google Apps Script URL ──────────────────────
-const WAITLIST_ENDPOINT = 'https://script.google.com/macros/s/AKfycbx56no0umLeuYjT2W5Q-zQMnAo5kfs-s-pscvzIFdsOOo9Q-6WshAg6XiMnMUJsdc2q/exec'
+const WAITLIST_ENDPOINT = 'https://script.google.com/macros/s/AKfycbwKHSf_4O0eHgtLDku-nw72wxcYcex3jfOgqPJRuPvqaXIBFu63bRicsZxplBEokvld/exec'
 // ───────────────────────────────────────────────────────────────────────────
 
 // ── Reusable fade-up variant ────────────────────────────────────────────────
