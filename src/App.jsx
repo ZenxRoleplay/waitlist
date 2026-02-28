@@ -477,7 +477,7 @@ function Waitlist() {
     const payload = {
       email: email.trim(),
       source: 'hiveout.in',
-      timestamp: new Date().toISOString(),
+      timestamp: new Date().toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', hour12: false }).replace(',', ''),
     }
 
     try {
