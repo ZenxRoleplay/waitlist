@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import './WaitingPage.css';
 import { ReactComponent as HiveoutLogo } from '../img/hiveout_logo.svg';
 
@@ -55,6 +55,18 @@ const MoonIcon = () => (
 );
 
 export default function WaitingPage({ theme, toggleTheme }) {
+  useEffect(() => {
+    const els = document.querySelectorAll('.reveal');
+    const io = new IntersectionObserver(
+      entries => entries.forEach(e => {
+        if (e.isIntersecting) { e.target.classList.add('revealed'); io.unobserve(e.target); }
+      }),
+      { threshold: 0.12 }
+    );
+    els.forEach(el => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+
   return (
     <main className="waiting-root">
       <div className="hex-bg" aria-hidden="true">
@@ -110,7 +122,7 @@ export default function WaitingPage({ theme, toggleTheme }) {
 
       {/* ── What is HiveOut ── */}
       <section className="features-section" aria-labelledby="features-heading">
-        <div className="section-header">
+        <div className="section-header reveal">
           <span className="section-label">What is HiveOut</span>
           <h2 className="section-title" id="features-heading">
             Everything Mumbai.<br />One hive.
@@ -118,7 +130,7 @@ export default function WaitingPage({ theme, toggleTheme }) {
         </div>
         <div className="features-grid">
           {FEATURES.map((f, i) => (
-            <div key={f.label} className="feature-card-wrap" style={{ '--i': i }}>
+            <div key={f.label} className="feature-card-wrap reveal" style={{ '--i': i }}>
               <div className="hex-border">
                 <div className="feature-card">
                   <span className="feature-label">
