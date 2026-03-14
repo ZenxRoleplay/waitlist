@@ -153,7 +153,6 @@ html { scroll-behavior: smooth; }
   backdrop-filter: blur(28px) saturate(1.8);
   -webkit-backdrop-filter: blur(28px) saturate(1.8);
   box-shadow: 0 6px 32px 0 var(--shadow-md);
-  animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
 }
 
 .app.dark .topbar {
@@ -180,12 +179,6 @@ html { scroll-behavior: smooth; }
   height: 30px;
   width: auto;
   display: block;
-  animation: logoFloat 3.5s ease-in-out infinite;
-}
-
-@keyframes logoFloat {
-  0%, 100% { transform: translateY(0px); }
-  50%       { transform: translateY(-5px); }
 }
 
 /* ── Theme Toggle ─────────────────────────────────────────── */
