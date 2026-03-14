@@ -1,0 +1,559 @@
+﻿/* ============================================================
+   WaitingPage.css — HiveOut Waiting Page
+   ============================================================ */
+
+/* ── Google Font ──────────────────────────────────────────── */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Space+Grotesk:wght@700;800&display=swap');
+
+/* ── Variables ────────────────────────────────────────────── */
+:root {
+  --mango:          #FFB300;
+  --mango-dark:     #FF8F00;
+  --mango-glow:     rgba(255, 179, 0, 0.22);
+  --mango-glow-str: rgba(255, 143, 0, 0.48);
+  --transition:     0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  --font:           'Inter', system-ui, -apple-system, sans-serif;
+  --font-display:   'Space Grotesk', 'Inter', system-ui, sans-serif;
+  --radius:         14px;
+  --radius-pill:    100px;
+}
+
+/* ── Light ────────────────────────────────────────────────── */
+.app.light {
+  --bg:             #ffffff;
+  --text-primary:   #0a0a0a;
+  --text-secondary: #4a4a4a;
+  --text-muted:     #a0a0a0;
+  --surface:        rgba(244, 242, 237, 0.97);
+  --border:         rgba(0, 0, 0, 0.09);
+  --border-strong:  rgba(0, 0, 0, 0.16);
+  --shadow:         rgba(0, 0, 0, 0.07);
+  --shadow-md:      rgba(0, 0, 0, 0.22);
+  --input-bg:         #eeece8;
+  --hex-stroke:       rgba(0, 0, 0, 0.28);
+  --hex-glow-color:   rgba(0, 0, 0, 0.50);
+  --hex-peak-opacity: 0.28;
+  --card-shadow:      rgba(0, 0, 0, 0.38);
+  --card-shadow-hover:rgba(0, 0, 0, 0.58);
+  --topbar-bg:        rgba(255, 255, 255, 0.88);
+}
+
+/* ── Dark ─────────────────────────────────────────────────── */
+.app.dark {
+  --bg:             #050505;
+  --text-primary:   #f0f0f0;
+  --text-secondary: #909090;
+  --text-muted:     #3a3a3a;
+  --surface:        rgba(16, 16, 16, 0.96);
+  --border:         rgba(255, 255, 255, 0.08);
+  --border-strong:  rgba(255, 255, 255, 0.14);
+  --shadow:         rgba(0, 0, 0, 0.60);
+  --shadow-md:      rgba(0, 0, 0, 0.80);
+  --input-bg:         #111111;
+  --hex-stroke:       rgba(255, 255, 255, 0.28);
+  --hex-glow-color:   rgba(255, 255, 255, 0.55);
+  --hex-peak-opacity: 0.25;
+  --card-shadow:      rgba(0, 0, 0, 0.55);
+  --card-shadow-hover:rgba(0, 0, 0, 0.75);
+  --topbar-bg:        rgba(5, 5, 5, 0.90);
+}
+
+/* ── Reset ────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+.app {
+  background:  var(--bg);
+  color:       var(--text-primary);
+  min-height:  100vh;
+  font-family: var(--font);
+  transition:  background var(--transition), color var(--transition);
+  -webkit-font-smoothing:  antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.waiting-root {
+  min-height:     100vh;
+  display:        flex;
+  flex-direction: column;
+  align-items:    center;
+  position:       relative;
+  overflow-x:     hidden;
+}
+
+/* Subtle mango radial glow behind the hero area */
+.waiting-root::before {
+  content: '';
+  position: fixed;
+  top: -10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 80vw;
+  height: 55vh;
+  background: radial-gradient(ellipse, rgba(255,179,0,0.07) 0%, transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ============================================================
+   HEX BACKGROUND
+   ============================================================ */
+.hex-bg {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* light-mode: medium grey stroke; dark-mode: white stroke */
+.app.light .hex-cell {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 125 144'%3E%3Cpolygon points='62.5,2 123,34 123,110 62.5,142 2,110 2,34' fill='none' stroke='%23888888' stroke-width='1.2'/%3E%3C/svg%3E");
+}
+.app.dark .hex-cell {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 125 144'%3E%3Cpolygon points='62.5,2 123,34 123,110 62.5,142 2,110 2,34' fill='none' stroke='%23ffffff' stroke-width='1.2'/%3E%3C/svg%3E");
+}
+
+.hex-cell {
+  position: absolute;
+  /* exact size matches the tight-tiling geometry: W=√3·R, H=2·R, R=72 */
+  width:  124px;
+  height: 144px;
+  /* no transform offset — positioned by top-left corner */
+  opacity: 0;
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+}
+
+/* only .glow cells animate */
+.hex-cell.glow {
+  animation: hexPulse var(--dur, 6s) ease-in-out var(--delay, 0s) infinite;
+}
+
+@keyframes hexPulse {
+  0%,  100% { opacity: 0;    filter: none; }
+  40%,  60% { opacity: var(--hex-peak-opacity, 0.2); filter: drop-shadow(0 0 8px var(--hex-glow-color)); }
+}
+
+/* ============================================================
+   TOPBAR
+   ============================================================ */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  height: 66px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 2.2rem;
+  background: var(--topbar-bg);
+  backdrop-filter: blur(28px) saturate(1.8);
+  -webkit-backdrop-filter: blur(28px) saturate(1.8);
+  box-shadow: 0 6px 32px 0 var(--shadow-md);
+  animation: slideDown 0.5s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.app.dark .topbar {
+  border-bottom: 1px solid var(--border-strong);
+  box-shadow: 0 1px 0 0 var(--border), 0 6px 32px 0 var(--shadow-md);
+}
+
+@keyframes slideDown {
+  from { transform: translateY(-66px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+
+.brand-name {
+  font-family:    var(--font-display);
+  font-size:      1.55rem;
+  font-weight:    800;
+  letter-spacing: -1px;
+  color:          var(--mango);
+  text-transform: lowercase;
+  line-height:    1;
+}
+
+.brand-logo {
+  height: 30px;
+  width: auto;
+  display: block;
+}
+
+/* ── Theme Toggle ─────────────────────────────────────────── */
+.theme-toggle {
+  background: none;
+  border: none;
+  cursor: pointer;
+  outline: none;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.toggle-track {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 50px;
+  height: 26px;
+  background: linear-gradient(135deg, var(--mango-dark), var(--mango));
+  border-radius: 26px;
+  box-shadow: 0 2px 8px var(--mango-glow);
+  transition: box-shadow var(--transition);
+}
+
+.toggle-thumb {
+  position: absolute;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--bg);
+  color: var(--mango-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+  transition: transform var(--transition), background var(--transition);
+}
+
+.app.dark  .toggle-thumb { transform: translateX(24px); }
+.theme-toggle:hover .toggle-track { box-shadow: 0 3px 16px var(--mango-glow-str); }
+
+/* ============================================================
+   HERO
+   ============================================================ */
+.hero {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 800px;
+  text-align: center;
+  padding: 7rem 1.5rem 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.4rem;
+}
+
+/* ── Shared section label pill ────────────────────────────── */
+.section-label {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--mango-dark);
+  background: var(--mango-glow);
+  border: 1px solid rgba(255,179,0,0.30);
+  border-radius: var(--radius-pill);
+  padding: 0.3rem 0.9rem;
+  animation: fadeUp 0.5s ease 0.1s both;
+}
+
+.hero-title {
+  font-family: var(--font-display);
+  font-size: clamp(2.8rem, 9vw, 5.5rem);
+  font-weight: 800;
+  line-height: 1.03;
+  letter-spacing: -3px;
+  color: var(--text-primary);
+  animation: fadeUp 0.6s ease 0.2s both;
+}
+
+.title-accent {
+  color: var(--mango);
+}
+
+.hero-tagline {
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.5vw, 1.3rem);
+  font-weight: 700;
+  letter-spacing: -0.3px;
+  color: var(--mango);
+  animation: fadeUp 0.6s ease 0.28s both;
+}
+
+.hero-sub {
+  font-size: clamp(0.93rem, 2vw, 1.08rem);
+  color: var(--text-secondary);
+  line-height: 1.72;
+  max-width: 480px;
+  font-weight: 400;
+  animation: fadeUp 0.6s ease 0.32s both;
+}
+
+@keyframes fadeUp {
+  from { transform: translateY(22px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+
+/* ── Instagram Button ─────────────────────────────────────── */
+.insta-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.85rem 1.9rem;
+  border-radius: var(--radius-pill);
+  background: linear-gradient(135deg, var(--mango-dark), var(--mango));
+  color: #111;
+  font-family: var(--font);
+  font-weight: 700;
+  font-size: 0.93rem;
+  text-decoration: none;
+  letter-spacing: 0.01em;
+  box-shadow: 0 4px 22px var(--mango-glow);
+  transition: transform 0.18s, box-shadow 0.18s, filter 0.18s;
+  animation: fadeUp 0.6s ease 0.44s both;
+}
+
+.insta-btn:hover {
+  transform: translateY(-3px) scale(1.04);
+  box-shadow: 0 8px 32px var(--mango-glow-str);
+  filter: brightness(1.07);
+}
+
+.insta-btn:active { transform: scale(0.97); }
+
+/* ── Hero chip strip ──────────────────────────────────────── */
+.hero-chips {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  animation: fadeUp 0.6s ease 0.58s both;
+}
+
+.hero-chip {
+  font-size: 0.78rem;
+  font-weight: 500;
+  color: var(--text-secondary);
+  padding: 0.3rem 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-pill);
+}
+
+.chip-dot {
+  display: inline-block;
+  width: 3px;
+  height: 3px;
+  border-radius: 50%;
+  background: var(--text-muted);
+}
+
+/* ============================================================
+   FEATURES — Hexagonal Cards
+   ============================================================ */
+.features-section {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  max-width: 1100px;
+  padding: 4rem 1.5rem 5.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+}
+
+/* ── Shared section header block ─────────────────────────── */
+.section-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.section-title {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 3rem);
+  font-weight: 800;
+  line-height: 1.1;
+  letter-spacing: -1.5px;
+  color: var(--text-primary);
+  animation: fadeUp 0.6s ease 0.15s both;
+}
+
+.features-grid {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 1.5rem 2.5rem;
+  width: 100%;
+  padding: 1rem 0;
+}
+
+/* Wrapper: applies drop-shadow (must be outside clip-path element) */
+.feature-card-wrap {
+  filter: drop-shadow(0 6px 22px var(--card-shadow));
+  transition: transform var(--transition), filter var(--transition);
+  animation: fadeUp 0.6s ease calc(0.55s + var(--i, 0) * 0.1s) both;
+  cursor: default;
+  flex-shrink: 0;
+}
+
+.feature-card-wrap:hover {
+  transform: translateY(-8px) scale(1.04);
+  filter: drop-shadow(0 20px 48px var(--card-shadow-hover));
+}
+
+/* Hex border ring — light mode: invisible (only shadow shows), dark mode: thin grey ring */
+.hex-border {
+  width: 210px;
+  height: 242px;
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.app.light .hex-border { background: var(--bg); }
+.app.dark  .hex-border { background: rgba(210, 210, 210, 0.30); }
+
+/* Inner hex card */
+.feature-card {
+  width: 204px;
+  height: 235px;
+  background: var(--surface);
+  clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 0.55rem;
+  padding: 3.5rem 3rem;
+  transition: background var(--transition);
+}
+
+.feature-label {
+  font-size: 1rem;
+  font-weight: 800;
+  font-family: var(--font-display);
+  color: var(--mango);
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+.feature-hash {
+  color: var(--mango-dark);
+  margin-right: 1px;
+}
+
+.feature-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  font-weight: 400;
+  line-height: 1.45;
+}
+
+/* ============================================================
+   FOOTER
+   ============================================================ */
+.footer {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.8rem;
+  padding: 1.4rem 2.2rem;
+  background: var(--surface);
+  border-top: 1px solid var(--border-strong);
+  box-shadow: 0 -1px 0 0 var(--border);
+  margin-top: auto;
+}
+
+.app.light .footer { background: #ffffff; }
+
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.footer-brand {
+  font-family:    var(--font-display);
+  font-size:      1.1rem;
+  font-weight:    800;
+  letter-spacing: -0.5px;
+  color:          var(--mango);
+  text-transform: lowercase;
+}
+
+.footer-coming-soon {
+  font-size:      0.65rem;
+  font-weight:    700;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color:          var(--mango-dark);
+  background:     var(--mango-glow);
+  border:         1px solid rgba(255, 179, 0, 0.28);
+  border-radius:  var(--radius-pill);
+  padding:        0.2rem 0.65rem;
+}
+
+.footer-center {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+}
+
+.footer-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: color var(--transition);
+}
+.footer-link:hover { color: var(--mango); }
+
+.footer-sep {
+  display: inline-block;
+  width: 1px;
+  height: 12px;
+  background: var(--border-strong);
+}
+
+.footer-copy {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+
+/* ============================================================
+   RESPONSIVE
+   ============================================================ */
+@media (max-width: 780px) {
+  .topbar { padding: 0 1.25rem; }
+
+  .hero { padding: 4.5rem 1.25rem 3.5rem; gap: 1.3rem; }
+  .hero-title { letter-spacing: -1.8px; }
+
+  .features-section { padding: 3rem 1.25rem 3.5rem; }
+  .features-grid { gap: 1.2rem 1.8rem; }
+
+  .footer { padding: 1.25rem; flex-wrap: wrap; gap: 0.6rem; }
+}
+
+@media (max-width: 480px) {
+  .hex-border { width: 158px; height: 182px; }
+  .feature-card { width: 153px; height: 176px; padding: 2.8rem 2rem; }
+  .feature-label { font-size: 0.88rem; }
+  .features-grid { gap: 0.9rem 1.2rem; }
+  .hex-cell { width: 110px; height: 127px; }
+  .hero-chips { gap: 0.4rem; }
+}
+
+@media (min-width: 1400px) {
+  .hero-title { letter-spacing: -4px; }
+}
